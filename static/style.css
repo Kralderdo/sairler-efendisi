@@ -1,0 +1,232 @@
+* {
+    box-sizing: border-box;
+}
+
+body {
+    margin: 0;
+    background: #09090b;
+    color: #eeeeee;
+    font-family: Georgia, serif;
+}
+
+header {
+    height: 72px;
+    padding: 0 6%;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    border-bottom: 1px solid #29251f;
+    position: sticky;
+    top: 0;
+    background: #09090b;
+    z-index: 10;
+}
+
+.logo {
+    color: #d8b45d;
+    text-decoration: none;
+    font-weight: bold;
+    letter-spacing: 1px;
+}
+
+nav {
+    display: flex;
+    gap: 16px;
+}
+
+nav a {
+    color: #cccccc;
+    text-decoration: none;
+    font-family: Arial, sans-serif;
+    font-size: 14px;
+}
+
+nav a:hover {
+    color: #d8b45d;
+}
+
+.hero {
+    text-align: center;
+    padding: 100px 20px;
+    background: radial-gradient(circle, #302715, #09090b 60%);
+}
+
+.hero h1 {
+    font-size: clamp(45px, 9vw, 80px);
+    line-height: 1;
+}
+
+.hero b,
+.gold {
+    color: #d8b45d;
+}
+
+.hero p {
+    color: #aaaaaa;
+    font-family: Arial, sans-serif;
+}
+
+.btn {
+    display: inline-block;
+    background: #d8b45d;
+    color: #111111;
+    border: 0;
+    border-radius: 8px;
+    padding: 13px 22px;
+    font-weight: bold;
+    text-decoration: none;
+    cursor: pointer;
+}
+
+section {
+    max-width: 1100px;
+    margin: auto;
+    padding: 60px 6%;
+}
+
+.grid,
+.plans {
+    display: grid;
+    grid-template-columns: repeat(
+        auto-fit,
+        minmax(230px, 1fr)
+    );
+    gap: 18px;
+}
+
+.grid article,
+.plan,
+.poem,
+.form,
+.free-box {
+    background: #151519;
+    border: 1px solid #302b22;
+    border-radius: 14px;
+    padding: 24px;
+}
+
+.grid h3 a {
+    color: #d8b45d;
+    text-decoration: none;
+}
+
+.grid p,
+.muted,
+.note {
+    color: #aaaaaa;
+    line-height: 1.7;
+}
+
+.form {
+    max-width: 550px;
+    margin: 60px auto;
+}
+
+.form input,
+.form textarea {
+    width: 100%;
+    margin: 8px 0;
+    padding: 13px;
+    background: #0b0b0d;
+    color: white;
+    border: 1px solid #39342c;
+    border-radius: 7px;
+}
+
+.form textarea {
+    min-height: 240px;
+    resize: vertical;
+}
+
+.center {
+    text-align: center;
+    min-height: 55vh;
+}
+
+.center h2 {
+    color: #d8b45d;
+    font-size: 34px;
+}
+
+.free-box {
+    max-width: 600px;
+    margin: 30px auto;
+}
+
+.free-box h3 {
+    color: #d8b45d;
+}
+
+.free-box li {
+    margin: 12px;
+    color: #cccccc;
+}
+
+.poem {
+    max-width: 800px;
+    margin: 60px auto;
+}
+
+.poem h1 {
+    color: #d8b45d;
+}
+
+.text {
+    white-space: pre-wrap;
+    line-height: 2;
+    font-size: 19px;
+    margin: 30px 0;
+}
+
+.flash {
+    margin: 15px auto;
+    max-width: 900px;
+    padding: 12px;
+    background: #272115;
+    color: #e4c978;
+    border-radius: 8px;
+}
+
+.quote-section {
+    text-align: center;
+}
+
+.quote {
+    color: #d8b45d;
+    font-size: 28px;
+    font-style: italic;
+}
+
+footer {
+    text-align: center;
+    padding: 35px;
+    color: #666666;
+    font: 13px Arial, sans-serif;
+}
+
+@media (max-width: 650px) {
+
+    header {
+        padding: 0 14px;
+    }
+
+    .logo {
+        font-size: 13px;
+    }
+
+    nav {
+        gap: 7px;
+    }
+
+    nav a {
+        font-size: 11px;
+    }
+
+    section {
+        padding: 45px 15px;
+    }
+
+    .hero {
+        padding: 75px 15px;
+    }
+  }
