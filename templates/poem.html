@@ -1,0 +1,27 @@
+{% extends "base.html" %}
+
+{% block title %}
+{{ poem.title }} | ŞAİRLER EFENDİSİ
+{% endblock %}
+
+{% block content %}
+
+<article class="poem">
+
+    <h1>{{ poem.title }}</h1>
+
+    <small>
+        ✒️ {{ poem.username }}
+    </small>
+
+    <div class="text">
+        {{ poem.body }}
+    </div>
+
+    <a class="btn" href="/">
+        ← Şiirlere Dön
+    </a>
+
+</article>
+
+{% endblock %}
