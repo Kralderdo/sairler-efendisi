@@ -1,0 +1,41 @@
+{% extends "base.html" %}
+
+{% block title %}
+Şiirini Yaz | ŞAİRLER EFENDİSİ
+{% endblock %}
+
+{% block content %}
+
+<div class="form">
+
+    <h2>✍️ Şiirini Yaz</h2>
+
+    <p class="muted">
+        Duygularını kelimelere dök ve ŞAİİRLER EFENDİSİ'nde paylaş.
+    </p>
+
+    <form method="post">
+
+        <input
+            name="title"
+            type="text"
+            placeholder="Şiir başlığı"
+            maxlength="150"
+            required
+        >
+
+        <textarea
+            name="body"
+            placeholder="Şiirini buraya yaz..."
+            required
+        ></textarea>
+
+        <button class="btn" type="submit">
+            ✨ Şiiri Yayınla
+        </button>
+
+    </form>
+
+</div>
+
+{% endblock %}
