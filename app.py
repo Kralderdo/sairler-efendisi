@@ -4,7 +4,11 @@ import os
 from werkzeug.security import generate_password_hash, check_password_hash
 
 app = Flask(__name__)
-app.secret_key = os.environ.get("SECRET_KEY", "sairler-efendisi-secret")
+
+app.secret_key = os.environ.get(
+    "SECRET_KEY",
+    "sairler-efendisi-secret"
+)
 
 DB = "sairler.db"
 
@@ -40,6 +44,10 @@ def init():
 
     conn.commit()
     conn.close()
+
+
+# Uygulama başlarken veritabanını hazırla
+init()
 
 
 @app.context_processor
@@ -84,7 +92,9 @@ def register():
                 (
                     request.form["username"],
                     request.form["email"],
-                    generate_password_hash(request.form["password"])
+                    generate_password_hash(
+                        request.form["password"]
+                    )
                 )
             )
 
@@ -95,7 +105,6 @@ def register():
             return redirect(url_for("login"))
 
         except sqlite3.IntegrityError:
-
             flash("Bu kullanıcı adı veya e-posta zaten kayıtlı.")
 
     return render_template("register.html")
@@ -125,15 +134,12 @@ def login():
 
 @app.route("/logout")
 def logout():
-
     session.clear()
-
     return redirect(url_for("home"))
 
 
 @app.route("/premium")
 def premium():
-
     return render_template("premium.html")
 
 
@@ -154,7 +160,7 @@ def new_poem():
 
         conn.execute(
             """
-            INSERT INTO poems(title,body,author_id)
+            INSERT INTO poems(title, body, author_id)
             VALUES(?,?,?)
             """,
             (
@@ -235,11 +241,10 @@ def admin():
 
 
 if __name__ == "__main__":
-    init()
 
     port = int(os.environ.get("PORT", 5000))
 
     app.run(
         host="0.0.0.0",
         port=port
-      )
+    )
