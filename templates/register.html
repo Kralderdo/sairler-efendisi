@@ -1,0 +1,53 @@
+{% extends "base.html" %}
+
+{% block title %}
+Kayıt Ol | ŞAİRLER EFENDİSİ
+{% endblock %}
+
+{% block content %}
+
+<div class="form">
+
+    <h2>✒️ Şair Ol</h2>
+
+    <p class="muted">
+        ŞAİRLER EFENDİSİ'ne ücretsiz katıl.
+    </p>
+
+    <form method="post">
+
+        <input
+            name="username"
+            type="text"
+            placeholder="Kullanıcı adı"
+            required
+        >
+
+        <input
+            name="email"
+            type="email"
+            placeholder="E-posta adresin"
+            required
+        >
+
+        <input
+            name="password"
+            type="password"
+            placeholder="Şifren"
+            required
+        >
+
+        <button class="btn" type="submit">
+            Ücretsiz Kayıt Ol
+        </button>
+
+    </form>
+
+    <p class="muted">
+        Zaten hesabın var mı?
+        <a href="/login">Giriş yap</a>
+    </p>
+
+</div>
+
+{% endblock %}
