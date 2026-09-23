@@ -1,0 +1,92 @@
+<!doctype html>
+<html lang="tr">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <title>
+        {% block title %}
+        ŞAİRLER EFENDİSİ
+        {% endblock %}
+    </title>
+
+    <link rel="stylesheet" href="/static/style.css">
+</head>
+
+<body>
+
+<header>
+
+    <a class="logo" href="/">
+        👑 ŞAİRLER EFENDİSİ
+    </a>
+
+    <nav>
+
+        <a href="/">Şiirler</a>
+
+        <a href="/premium">
+            Ücretsiz Üyelik
+        </a>
+
+        {% if user %}
+
+            <a href="/poem/new">
+                ✍️ Şiir Yaz
+            </a>
+
+            <a href="/logout">
+                Çıkış
+            </a>
+
+        {% else %}
+
+            <a href="/login">
+                Giriş
+            </a>
+
+            <a href="/register">
+                Kayıt Ol
+            </a>
+
+        {% endif %}
+
+    </nav>
+
+</header>
+
+
+<main>
+
+    {% with messages = get_flashed_messages() %}
+
+        {% if messages %}
+
+            {% for message in messages %}
+
+                <div class="flash">
+                    {{ message }}
+                </div>
+
+            {% endfor %}
+
+        {% endif %}
+
+    {% endwith %}
+
+
+    {% block content %}
+
+    {% endblock %}
+
+</main>
+
+
+<footer>
+
+    © 2026 ŞAİRLER EFENDİSİ
+
+</footer>
+
+</body>
+</html>
