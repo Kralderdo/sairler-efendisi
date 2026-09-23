@@ -1,0 +1,74 @@
+{% extends "base.html" %}
+
+{% block title %}
+Yönetim Paneli | ŞAİRLER EFENDİSİ
+{% endblock %}
+
+{% block content %}
+
+<section>
+
+    <h2>👑 Yönetim Paneli</h2>
+
+    <h3>👤 Kullanıcılar</h3>
+
+    <div class="grid">
+
+        {% for u in users %}
+
+        <article>
+
+            <h3>{{ u.username }}</h3>
+
+            <p>{{ u.email }}</p>
+
+            {% if u.admin %}
+                <small>👑 Yönetici</small>
+            {% else %}
+                <small>✒️ Şair</small>
+            {% endif %}
+
+        </article>
+
+        {% else %}
+
+        <p>Henüz kullanıcı yok.</p>
+
+        {% endfor %}
+
+    </div>
+
+
+    <h3>📝 Yayındaki Şiirler</h3>
+
+    <div class="grid">
+
+        {% for p in poems %}
+
+        <article>
+
+            <h3>
+                {{ p.title }}
+            </h3>
+
+            <p>
+                {{ p.body[:120] }}
+            </p>
+
+            <small>
+                ✒️ {{ p.username }}
+            </small>
+
+        </article>
+
+        {% else %}
+
+        <p>Henüz şiir yok.</p>
+
+        {% endfor %}
+
+    </div>
+
+</section>
+
+{% endblock %}
