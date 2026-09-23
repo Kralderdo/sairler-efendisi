@@ -1,0 +1,102 @@
+{% extends "base.html" %}
+
+{% block title %}
+ŞAİRLER EFENDİSİ | Ana Sayfa
+{% endblock %}
+
+{% block content %}
+
+<section class="hero">
+
+    <p class="gold">
+        ✒️ KELİMELERİN SARAYI
+    </p>
+
+    <h1>
+        Şiirini yaz.<br>
+        <b>İzini bırak.</b>
+    </h1>
+
+    <p>
+        Duygularını kelimelere dök,
+        şiirlerini ŞAİRLER EFENDİSİ'nde paylaş.
+    </p>
+
+    {% if user %}
+
+        <a class="btn" href="/poem/new">
+            ✍️ Şiirini Yaz
+        </a>
+
+    {% else %}
+
+        <a class="btn" href="/register">
+            👤 Ücretsiz Katıl
+        </a>
+
+    {% endif %}
+
+</section>
+
+
+<section>
+
+    <h2>📝 Son Şiirler</h2>
+
+    <div class="grid">
+
+        {% for p in poems %}
+
+        <article>
+
+            <h3>
+                <a href="/poem/{{ p.id }}">
+                    {{ p.title }}
+                </a>
+            </h3>
+
+            <p>
+                {{ p.body[:180] }}
+
+                {% if p.body|length > 180 %}
+                    ...
+                {% endif %}
+            </p>
+
+            <small>
+                ✒️ {{ p.username }}
+            </small>
+
+        </article>
+
+        {% else %}
+
+        <article>
+
+            <h3>Henüz şiir yok</h3>
+
+            <p>
+                İlk şiiri sen yayınla.
+            </p>
+
+            <a class="btn" href="/register">
+                Şair Ol
+            </a>
+
+        </article>
+
+        {% endfor %}
+
+    </div>
+
+</section>
+
+<section class="quote-section">
+
+    <div class="quote">
+        “Kelimeler biter, hisler kalır.”
+    </div>
+
+</section>
+
+{% endblock %}
