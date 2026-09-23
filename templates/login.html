@@ -1,0 +1,46 @@
+{% extends "base.html" %}
+
+{% block title %}
+Giriş Yap | ŞAİRLER EFENDİSİ
+{% endblock %}
+
+{% block content %}
+
+<div class="form">
+
+    <h2>👑 Giriş Yap</h2>
+
+    <p class="muted">
+        ŞAİRLER EFENDİSİ hesabına giriş yap.
+    </p>
+
+    <form method="post">
+
+        <input
+            name="email"
+            type="email"
+            placeholder="E-posta adresin"
+            required
+        >
+
+        <input
+            name="password"
+            type="password"
+            placeholder="Şifren"
+            required
+        >
+
+        <button class="btn" type="submit">
+            Giriş Yap
+        </button>
+
+    </form>
+
+    <p class="muted">
+        Hesabın yok mu?
+        <a href="/register">Ücretsiz kayıt ol</a>
+    </p>
+
+</div>
+
+{% endblock %}
