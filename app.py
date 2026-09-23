@@ -5,10 +5,9 @@ from werkzeug.security import generate_password_hash, check_password_hash
 
 app = Flask(__name__)
 
-app.secret_key = os.environ.get(
-    "SECRET_KEY",
-    "sairler-efendisi-secret"
-)
+# Render Environment Variables üzerinden alınır.
+# Kodun içinde admin şifresi bulunmaz.
+app.secret_key = os.environ.get("SECRET_KEY", "change-this-secret-key")
 
 DB = "sairler.db"
 
@@ -24,25 +23,76 @@ def init():
 
     conn.executescript("""
     CREATE TABLE IF NOT EXISTS users (
-        id INTEGER PRIMARY KEY,
-        username TEXT UNIQUE,
-        email TEXT UNIQUE,
-        password TEXT,
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        username TEXT UNIQUE NOT NULL,
+        email TEXT UNIQUE NOT NULL,
+        password TEXT NOT NULL,
         premium INTEGER DEFAULT 0,
         admin INTEGER DEFAULT 0
     );
 
     CREATE TABLE IF NOT EXISTS poems (
-        id INTEGER PRIMARY KEY,
-        title TEXT,
-        body TEXT,
-        author_id INTEGER,
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        title TEXT NOT NULL,
+        body TEXT NOT NULL,
+        author_id INTEGER NOT NULL,
         likes INTEGER DEFAULT 0,
-        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+        FOREIGN KEY (author_id) REFERENCES users(id)
     );
     """)
 
     conn.commit()
+
+    # Admin bilgileri Render Environment Variables'dan alınır.
+    admin_email = os.environ.get("ADMIN_EMAIL")
+    admin_password = os.environ.get("ADMIN_PASSWORD")
+
+    if admin_email and admin_password:
+
+        admin_username = os.environ.get(
+            "ADMIN_USERNAME",
+            "Kralderdo"
+        )
+
+        existing = conn.execute(
+            "SELECT id FROM users WHERE email=?",
+            (admin_email,)
+        ).fetchone()
+
+        if existing:
+            # Hesap varsa admin yap ve şifreyi güncelle
+            conn.execute(
+                """
+                UPDATE users
+                SET admin=1,
+                    username=?,
+                    password=?
+                WHERE email=?
+                """,
+                (
+                    admin_username,
+                    generate_password_hash(admin_password),
+                    admin_email
+                )
+            )
+        else:
+            # Admin hesabı yoksa oluştur
+            conn.execute(
+                """
+                INSERT INTO users
+                (username, email, password, premium, admin)
+                VALUES (?, ?, ?, 1, 1)
+                """,
+                (
+                    admin_username,
+                    admin_email,
+                    generate_password_hash(admin_password)
+                )
+            )
+
+        conn.commit()
+
     conn.close()
 
 
@@ -55,10 +105,14 @@ def context():
     user = None
 
     if session.get("uid"):
-        user = db().execute(
+        conn = db()
+
+        user = conn.execute(
             "SELECT * FROM users WHERE id=?",
             (session["uid"],)
         ).fetchone()
+
+        conn.close()
 
     return {"user": user}
 
@@ -76,7 +130,10 @@ def home():
 
     conn.close()
 
-    return render_template("home.html", poems=poems)
+    return render_template(
+        "home.html",
+        poems=poems
+    )
 
 
 @app.route("/register", methods=["GET", "POST"])
@@ -84,17 +141,27 @@ def register():
 
     if request.method == "POST":
 
+        username = request.form.get("username", "").strip()
+        email = request.form.get("email", "").strip().lower()
+        password = request.form.get("password", "")
+
+        if not username or not email or not password:
+            flash("Lütfen tüm alanları doldur.")
+            return render_template("register.html")
+
         try:
             conn = db()
 
             conn.execute(
-                "INSERT INTO users(username,email,password) VALUES(?,?,?)",
+                """
+                INSERT INTO users
+                (username, email, password)
+                VALUES (?, ?, ?)
+                """,
                 (
-                    request.form["username"],
-                    request.form["email"],
-                    generate_password_hash(
-                        request.form["password"]
-                    )
+                    username,
+                    email,
+                    generate_password_hash(password)
                 )
             )
 
@@ -102,6 +169,7 @@ def register():
             conn.close()
 
             flash("Kayıt başarılı. Şimdi giriş yapabilirsin.")
+
             return redirect(url_for("login"))
 
         except sqlite3.IntegrityError:
@@ -115,16 +183,28 @@ def login():
 
     if request.method == "POST":
 
-        user = db().execute(
+        email = request.form.get("email", "").strip().lower()
+        password = request.form.get("password", "")
+
+        conn = db()
+
+        user = conn.execute(
             "SELECT * FROM users WHERE email=?",
-            (request.form["email"],)
+            (email,)
         ).fetchone()
+
+        conn.close()
 
         if user and check_password_hash(
             user["password"],
-            request.form["password"]
+            password
         ):
+            session.clear()
             session["uid"] = user["id"]
+
+            if user["admin"]:
+                return redirect(url_for("admin"))
+
             return redirect(url_for("home"))
 
         flash("E-posta veya şifre hatalı.")
@@ -149,23 +229,39 @@ def new_poem():
     if not session.get("uid"):
         return redirect(url_for("login"))
 
-    user = db().execute(
+    conn = db()
+
+    user = conn.execute(
         "SELECT * FROM users WHERE id=?",
         (session["uid"],)
     ).fetchone()
 
+    conn.close()
+
+    if not user:
+        session.clear()
+        return redirect(url_for("login"))
+
     if request.method == "POST":
+
+        title = request.form.get("title", "").strip()
+        body = request.form.get("body", "").strip()
+
+        if not title or not body:
+            flash("Başlık ve şiir metni boş bırakılamaz.")
+            return render_template("new_poem.html")
 
         conn = db()
 
         conn.execute(
             """
-            INSERT INTO poems(title, body, author_id)
-            VALUES(?,?,?)
+            INSERT INTO poems
+            (title, body, author_id)
+            VALUES (?, ?, ?)
             """,
             (
-                request.form["title"],
-                request.form["body"],
+                title,
+                body,
                 user["id"]
             )
         )
@@ -183,7 +279,9 @@ def new_poem():
 @app.route("/poem/<int:id>")
 def poem(id):
 
-    poem_data = db().execute(
+    conn = db()
+
+    poem_data = conn.execute(
         """
         SELECT poems.*, users.username
         FROM poems
@@ -192,6 +290,8 @@ def poem(id):
         """,
         (id,)
     ).fetchone()
+
+    conn.close()
 
     if not poem_data:
         return "Şiir bulunamadı", 404
@@ -208,18 +308,28 @@ def admin():
     if not session.get("uid"):
         return redirect(url_for("login"))
 
-    user = db().execute(
+    conn = db()
+
+    user = conn.execute(
         "SELECT * FROM users WHERE id=?",
         (session["uid"],)
     ).fetchone()
 
+    if not user:
+        conn.close()
+        session.clear()
+        return redirect(url_for("login"))
+
     if not user["admin"]:
+        conn.close()
         return "Yetkisiz erişim", 403
 
-    conn = db()
-
     users = conn.execute(
-        "SELECT * FROM users ORDER BY id DESC"
+        """
+        SELECT id, username, email, premium, admin
+        FROM users
+        ORDER BY id DESC
+        """
     ).fetchall()
 
     poems = conn.execute(
@@ -248,3 +358,5 @@ if __name__ == "__main__":
         host="0.0.0.0",
         port=port
     )
+
+
